@@ -63,7 +63,7 @@ const AdminSideBar = () => {
         {openMenu.category && (
           <div className="ps-4">
             <Link
-              to="/admin/category/add"
+              to="/add-category"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Add Category
