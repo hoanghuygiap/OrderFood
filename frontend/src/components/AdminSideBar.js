@@ -1,15 +1,24 @@
-
-
 import React, { useState } from "react";
 import "../styles/admin.css";
 import { Link } from "react-router-dom";
-import { FaThLarge, FaUsers, FaEdit,FaChevronUp,FaChevronDown,FaList,FaFile, FaSearch, FaComment, FaCommentAlt} from "react-icons/fa";
+import {
+  FaThLarge,
+  FaUsers,
+  FaEdit,
+  FaChevronUp,
+  FaChevronDown,
+  FaList,
+  FaFile,
+  FaSearch,
+  FaComment,
+  FaCommentAlt,
+} from "react-icons/fa";
 
 const AdminSideBar = () => {
   const [openMenu, setOpenMenu] = useState({
     category: false,
     food: false,
-    orders: false
+    orders: false,
   });
 
   const toggleMenu = (menu) => {
@@ -57,7 +66,8 @@ const AdminSideBar = () => {
           onClick={() => toggleMenu("category")}
         >
           <FaEdit className="me-2" />
-          Food Category  {openMenu.category ? <FaChevronUp/>:<FaChevronDown/>}
+          Food Category{" "}
+          {openMenu.category ? <FaChevronUp /> : <FaChevronDown />}
         </button>
 
         {openMenu.category && (
@@ -69,7 +79,7 @@ const AdminSideBar = () => {
               Add Category
             </Link>
             <Link
-              to="/admin/category/manage"
+              to="/manage-category"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Manage Category
@@ -83,19 +93,19 @@ const AdminSideBar = () => {
           onClick={() => toggleMenu("food")}
         >
           <FaEdit className="me-2" />
-          Food Item {openMenu.food ? <FaChevronUp/>:<FaChevronDown/>}
+          Food Item {openMenu.food ? <FaChevronUp /> : <FaChevronDown />}
         </button>
 
         {openMenu.food && (
           <div className="ps-4">
             <Link
-              to="/admin/food/add"
+              to="/add-food"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Add Food Item
             </Link>
             <Link
-              to="/admin/food/manage"
+              to="/manage-food"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Manage Food Item
@@ -103,12 +113,12 @@ const AdminSideBar = () => {
           </div>
         )}
 
-         <button
+        <button
           className="list-group-item list-group-item-action bg-dark text-white border-0 text-start"
           onClick={() => toggleMenu("orders")}
         >
           <FaList className="me-2" />
-          Orders {openMenu.orders ? <FaChevronUp/>:<FaChevronDown/>}
+          Orders {openMenu.orders ? <FaChevronUp /> : <FaChevronDown />}
         </button>
 
         {openMenu.orders && (
@@ -117,13 +127,13 @@ const AdminSideBar = () => {
               to="/admin/category/add"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
-              Not Confirmed 
+              Not Confirmed
             </Link>
             <Link
               to="/admin/category/manage"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
-              Confirmed 
+              Confirmed
             </Link>
             <Link
               to="/admin/category/manage"
@@ -142,16 +152,15 @@ const AdminSideBar = () => {
               to="/admin/category/manage"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
-              Delivered 
+              Delivered
             </Link>
-             
-             <Link
+
+            <Link
               to="/admin/category/manage"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               All Orders
             </Link>
-            
           </div>
         )}
 
@@ -159,16 +168,16 @@ const AdminSideBar = () => {
           to="/admin/search"
           className="list-group-item list-group-item-action bg-dark text-white border-0"
         >
-          <FaFile className="me-2" /> B/W Dates Report 
+          <FaFile className="me-2" /> B/W Dates Report
         </Link>
-
 
         {/* Search */}
         <Link
           to="/admin/search"
           className="list-group-item list-group-item-action bg-dark text-white border-0"
         >
-          <FaSearch className="me-2" />Search
+          <FaSearch className="me-2" />
+          Search
         </Link>
 
         {/* Reviews */}
@@ -176,7 +185,8 @@ const AdminSideBar = () => {
           to="/admin/reviews"
           className="list-group-item list-group-item-action bg-dark text-white border-0"
         >
-          <FaCommentAlt className="me-2" />Manage Reviews
+          <FaCommentAlt className="me-2" />
+          Manage Reviews
         </Link>
       </div>
     </div>
