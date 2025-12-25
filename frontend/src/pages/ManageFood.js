@@ -32,7 +32,7 @@ const ManageFood = () => {
       <div>
         <h3 className="text-center text-primary mb-4">
           <i className="fas fa-list-alt me-1"></i>Manage Food Items
-          {/* {JSON.stringify(categories)} */}
+          {/* {JSON.stringify(foods)} */}
         </h3>
 
         <h5 className="text-end text-muted">
