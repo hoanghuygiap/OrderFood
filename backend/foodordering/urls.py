@@ -7,5 +7,6 @@ urlpatterns = [
       path('categories/',list_categories),
       path('foods/',list_foods),
       path('add-food-item/',add_food_item),
+      path('food_search/',food_search)
 ]
 

@@ -153,7 +153,7 @@ const AddFood = () => {
                 <input
                   name="item_price"
                   type="number"
-                  step="100000"
+                  step="10000"
                   value={formData.item_price}
                   className="form-control"
                   onChange={handleChange}

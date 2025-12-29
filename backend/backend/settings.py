@@ -124,6 +124,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+MEDIA_URL ='/media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'   
+#127.0.0.1:8000/media/food_images/
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
