@@ -30,13 +30,21 @@ const SeachPage = () => {
                 <img src= {`http://127.0.0.1:8000${food.image}`} className = "card-img-top" style = {{height:'180px'}}/>
                 <div className = "card-body">
                    <h5 className = "card-title">
-                      <Link to = "#">{food.item_name} {food.image}</Link>
+                      <Link to = "#">{food.item_name}</Link>
                       <p className = "card-text text-muted">{food.item_description?.slice(0,40)}...</p>
                       <div className = "d-flex justify-content-between align-items-center"> 
                         <span className= "fw-bold">{food.item_price}VND</span>
-                        <Link to = "" className= "btn btn-outline-primary btn-sm">
+                        {food.is_available ? (
+                           <Link to = "" className= "btn btn-outline-primary btn-sm">
                             <i className = "fas fa-shopping-basket me-1"></i>Order Now
-                        </Link>
+                           </Link>
+                        ): (
+                          <div title = "This food item is not available right now. Please try again later.">
+                               <button className= "btn btn-outline-secondary btn-sm">
+                            <i className = "fas fa-times-circle me-1"></i> Currently Unavaibable 
+                            </button>
+                          </div>
+                        )}                     
                       </div>
                    </h5>
                 </div>

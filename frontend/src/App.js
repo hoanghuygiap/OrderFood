@@ -7,6 +7,10 @@ import ManageCategory from './pages/ManageCategory';
 import AddFood from './pages/AddFood'; 
 import ManageFood from './pages/ManageFood';
 import SeachPage from './pages/SearchPage';
+import Register from './components/Register';
+import Login from './components/Login';
+import FoodDetails from './pages/FoodDetails';
+import Cart from './pages/Cart';
 function App() {
   return (
     <div>
@@ -20,7 +24,10 @@ function App() {
           <Route path='/add-food' element={<AddFood/>}></Route>
           <Route path='/manage-food' element={<ManageFood/>}></Route>
           <Route path='/search' element={<SeachPage/>}></Route>
-          
+          <Route path='/register' element={<Register/>}></Route>
+          <Route path='/login' element={<Login/>}></Route>
+          <Route path='/food/:id' element={<FoodDetails/>}></Route>
+          <Route path='/cart' element={<Cart/>}></Route>   
         </Routes>
       </BrowserRouter>
     </div>

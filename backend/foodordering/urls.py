@@ -7,6 +7,13 @@ urlpatterns = [
       path('categories/',list_categories),
       path('foods/',list_foods),
       path('add-food-item/',add_food_item),
-      path('food_search/',food_search)
+      path('food_search/',food_search),
+      path('random_foods/',random_foods),
+      path('register/',register_user),
+      path('login/',login_user),
+      path('foods/<int:id>/',food_detail),
+      path('cart/add/',add_to_cart),
+      path('cart/<int:user_id>/',get_cart_items),
+
 ]
 

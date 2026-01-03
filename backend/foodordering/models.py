@@ -4,7 +4,7 @@ from django.db import models
 class User(models.Model):
     first_name = models.CharField(max_length=50,null = True)
     last_name = models.CharField(max_length=50,null = True)
-    email = models.EmailField(max_length=100,null = True, unique=True)
+    email = models.EmailField(max_length=100,unique=True,null = True)
     mobile = models.CharField(max_length=15)
     password = models.CharField(max_length=100)
     reg_data = models.DateTimeField(auto_now_add=True)
@@ -31,3 +31,16 @@ class Food(models.Model):
 
     def __str__(self):
         return f"{self.item_name}({self.item_quantity})"
+
+
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    food = models.ForeignKey(Food, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    is_order_placed = models.BooleanField(default=False)
+    order_number = models.CharField(max_length=100,null = True)
+
+    def __str__(self):
+        return f"{self.order_number} ({self.user})"
+    
+    
