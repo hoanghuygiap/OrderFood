@@ -12,6 +12,7 @@ import Login from './components/Login';
 import FoodDetails from './pages/FoodDetails';
 import Cart from './pages/Cart';
 import PaymentPage from './pages/PaymentPage';
+import MyOrders from './pages/MyOrders';
 function App() {
   return (
     <div>
@@ -29,7 +30,8 @@ function App() {
           <Route path='/login' element={<Login/>}></Route>
           <Route path='/food/:id' element={<FoodDetails/>}></Route>
           <Route path='/cart' element={<Cart/>}></Route>   
-          <Route path='/payment' element={<PaymentPage/>}></Route>  
+          <Route path='/payment' element={<PaymentPage/>}></Route>
+           <Route path='/my-orders' element={<MyOrders/>}></Route>  
         </Routes>
       </BrowserRouter>
     </div>

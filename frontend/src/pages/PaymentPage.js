@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import PublicLayout from "../components/PubicLayout";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,47 +17,57 @@ const PaymentPage = () => {
   const navigate = useNavigate();
 
   const handlePlaceOrder = async () => {
+    if (!paymentMode) {
+      toast.error("Please select payment method");
+      return;
+    }
+
     if (paymentMode === "online") {
       const { cardNumber, expiry, cvv } = cardDetails;
+      
       if (!cardNumber || !expiry || !cvv) {
         toast.error("Please fill in all card details");
         return;
       }
-      try {
-        const response = await fetch("http://127.0.0.1:8000/api/place_order/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: userId,
-            address: address,
-            paymentMode: paymentMode,
-            cardNumber: paymentMode === "online" ? cardDetails.cardNumber : "",
-            expiry: paymentMode === "online" ? cardDetails.expiry : "",
-            cvv: paymentMode === "online" ? cardDetails.cvv : "",
-          }),
-        });
+    }
 
-        const result = await response.json();
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/place_order/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userId,
+          address: address,
+          paymentMode: paymentMode,
+          cardNumber: paymentMode === "online" ? cardDetails.cardNumber : "",
+          expiry: paymentMode === "online" ? cardDetails.expiry : "",
+          cvv: paymentMode === "online" ? cardDetails.cvv : "",
+        }),
+      });
 
-        if (response.status === 200 || response.ok) {
-          toast.success(result.message);
-          setTimeout(() => navigate("/my-orders"), 2000);
-        } else {
-          toast.error(result.message || "Something went wrong");
-        }
-      } catch (error) {
-        toast.error("Lỗi khi kết nối đến máy chủ");
+      const result = await response.json();
+
+      if (response.ok) {
+        toast.success(result.message);
+        setTimeout(() => navigate("/my-orders"), 2000);
+      } else {
+        toast.error(result.message || "Something went wrong");
       }
+    } catch (error) {
+      toast.error("Lỗi khi kết nối đến máy chủ");
     }
   };
+
   return (
     <PublicLayout>
       <ToastContainer position="top-center" autoClose={2000} />
       <div className="container py-5">
         <h3 className="text-center text-primary mb-4">
-          <i className="fas fa-credit-card me-2"></i>Checkout & Payment
+          <i className="fas fa-credit-card me-2"></i>
+          Checkout & Payment
         </h3>
-        <div className="card p-4 shadow-sm">
+
+        <div className="card p-4 shadow-sm mx-auto" style={{ maxWidth: "700px" }}>
           <div className="mb-3">
             <label className="form-label fw-semibold">Delivery Address</label>
             <textarea
@@ -76,12 +86,10 @@ const PaymentPage = () => {
               type="radio"
               name="paymentMode"
               value="cod"
-              required
               checked={paymentMode === "cod"}
               onChange={() => setPaymentMode("cod")}
-            ></input>
-
-            <label className="form-check-label"> Cash on Delivery</label>
+            />
+            <label className="form-check-label">Cash on Delivery</label>
           </div>
 
           <div className="form-check mb-3">
@@ -90,58 +98,67 @@ const PaymentPage = () => {
               type="radio"
               name="paymentMode"
               value="online"
-              required
               checked={paymentMode === "online"}
               onChange={() => setPaymentMode("online")}
-            ></input>
-
-            <label className="form-check-label"> Online Payment</label>
+            />
+            <label className="form-check-label">Online Payment</label>
           </div>
 
           {paymentMode === "online" && (
             <div className="row">
-              <div className="col-md-6">
-                <label className="form-lable">Card Number</label>
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Card Number</label>
                 <input
                   className="form-control"
                   type="text"
-                  name="paymentMode"
                   value={cardDetails.cardNumber}
-                  checked={paymentMode === "cod"}
-                  onChange={(e) => setPaymentMode({...cardDetails,cardNumber:e.target.value})}
-                ></input>
+                  onChange={(e) =>
+                    setCardDetails({
+                      ...cardDetails,
+                      cardNumber: e.target.value,
+                    })
+                  }
+                />
               </div>
 
-
-               <div className="col-md-3">
-                <label className="form-lable">Expiry</label>
+              <div className="col-md-3 mb-3">
+                <label className="form-label">Expiry</label>
                 <input
                   className="form-control"
                   type="text"
                   placeholder="MM/YY"
                   value={cardDetails.expiry}
-                  checked={paymentMode === "cod"}
-                  onChange={(e) => setPaymentMode({...cardDetails,expiry:e.target.value})}
-                ></input>
+                  onChange={(e) =>
+                    setCardDetails({
+                      ...cardDetails,
+                      expiry: e.target.value,
+                    })
+                  }
+                />
               </div>
 
-              <div className="col-md-3">
-                <label className="form-lable">CVV</label>
+              <div className="col-md-3 mb-3">
+                <label className="form-label">CVV</label>
                 <input
                   className="form-control"
                   type="password"
-                  name="paymentMode"
-                  placeholder="******* "
                   value={cardDetails.cvv}
-                  checked={paymentMode === "cod"}
-                  onChange={(e) => setPaymentMode({...cardDetails,cvv:e.target.value})}
-                ></input>
+                  onChange={(e) =>
+                    setCardDetails({
+                      ...cardDetails,
+                      cvv: e.target.value,
+                    })
+                  }
+                />
               </div>
-
             </div>
           )}
-          <button className=  "btn btn-success mt-4 w-100">
-            <i className = "fas fa-check-circle me-2"></i>
+
+          <button
+            className="btn btn-success mt-4 w-100"
+            onClick={handlePlaceOrder}
+          >
+            <i className="fas fa-check-circle me-2"></i>
             Confirm & Place Order
           </button>
         </div>
@@ -151,3 +168,4 @@ const PaymentPage = () => {
 };
 
 export default PaymentPage;
+
