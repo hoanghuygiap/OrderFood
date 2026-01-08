@@ -75,9 +75,7 @@ const MyOrders = () => {
                     Track
                   </Link>
 
-                  <Link
-                    to={`/order/${order.order_number}`}
-                    className="btn btn-outline-primary btn-sm"
+                  <Link className="btn btn-outline-primary btn-sm me-2" to={`/order-details/${order.order_number}`}
                   >
                     <FaInfoCircle className="me-1" />
                     View Details

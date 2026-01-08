@@ -143,7 +143,7 @@ const PublicLayout = ({ children }) => {
                         </Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="/settings">
+                        <Link className="dropdown-item" to="/changepassword">
                           <FaCogs className="me-1" />  Settings
                         </Link>
                       </li>

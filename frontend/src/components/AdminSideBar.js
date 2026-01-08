@@ -44,7 +44,7 @@ const AdminSideBar = () => {
       {/* Dashboard */}
       <div className="list-group list-group-flush mt-3">
         <Link
-          to="/admin/dashboard"
+          to="/admin-dashboard"
           className="list-group-item list-group-item-action bg-dark text-white border-0"
         >
           <FaThLarge className="me-2" />
@@ -53,7 +53,7 @@ const AdminSideBar = () => {
 
         {/* Users */}
         <Link
-          to="/admin/users"
+          to="/manage-users"
           className="list-group-item list-group-item-action bg-dark text-white border-0"
         >
           <FaUsers className="me-2" />
@@ -124,39 +124,39 @@ const AdminSideBar = () => {
         {openMenu.orders && (
           <div className="ps-4">
             <Link
-              to="/admin/category/add"
+              to="/order-not-confirm"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Not Confirmed
             </Link>
             <Link
-              to="/admin/category/manage"
+              to="/orders-confirmed"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Confirmed
             </Link>
             <Link
-              to="/admin/category/manage"
+              to="/food_being_prepared"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Beging Prepared
             </Link>
             <Link
-              to="/admin/category/manage"
+              to="/foodpickup"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Food Pickup
             </Link>
 
             <Link
-              to="/admin/category/manage"
+              to="/food-delivered"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Delivered
             </Link>
 
             <Link
-              to="/admin/category/manage"
+              to="/all-orders"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               All Orders
@@ -165,7 +165,7 @@ const AdminSideBar = () => {
         )}
 
         <Link
-          to="/admin/search"
+          to="/order-report"
           className="list-group-item list-group-item-action bg-dark text-white border-0"
         >
           <FaFile className="me-2" /> B/W Dates Report
@@ -173,7 +173,7 @@ const AdminSideBar = () => {
 
         {/* Search */}
         <Link
-          to="/admin/search"
+          to="/search-order"
           className="list-group-item list-group-item-action bg-dark text-white border-0"
         >
           <FaSearch className="me-2" />

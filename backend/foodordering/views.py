@@ -249,3 +249,327 @@ def user_orders(request,user_id):
      orders = OrderAddress.objects.filter(user_id = user_id).order_by('-id')
      serializer = MyOrdersListSerializer(orders,many = True)
      return Response(serializer.data)
+
+from .serializers import OrderSerializer
+@api_view(['GET'])
+def order_by_order_number(request,order_number):
+     orders = Order.objects.filter(order_number = order_number, is_order_placed=True).select_related('food')
+     serializer = OrderSerializer(orders,many = True)
+     return Response(serializer.data)
+
+
+# import thong tin
+from .serializers import OrderAddressSerializer
+@api_view(['GET'])
+def get_order_address(request,order_number):
+     address = OrderAddress.objects.get(order_number = order_number)
+     serializer = OrderAddressSerializer(address)
+     return Response(serializer.data)
+
+
+#import thong tin de in hoa don
+from django.shortcuts import render
+def get_invoice(request,order_number):
+     orders = Order.objects.filter(order_number = order_number, is_order_placed=True).select_related('food')
+     address = OrderAddress.objects.get(order_number = order_number)
+
+     grand_total =0
+     order_data =[]
+     for order in orders:
+          total_price = order.food.item_price * order.quantity
+          grand_total += total_price
+          order_data.append({
+               'food' : order.food,
+               'quantity' : order.quantity,
+               'total_price' : total_price,
+          })
+     return render(request,'invoice.html',{
+               'order_number':order_number,
+               'order_data':order_data,
+               'address':address,
+               'grand_total':grand_total,
+               'orders':order_data,
+               })
+
+
+
+from .serializers import UserSerializer
+
+@api_view(['GET'])
+def get_user_profile(request,user_id):
+     user = User.objects.get(id = user_id)
+     serializer = UserSerializer(user)
+     return Response(serializer.data)
+
+@api_view(['PUT'])
+def update_user_profile(request,user_id):
+     user = User.objects.get(id = user_id)
+     serializer = UserSerializer(user, data = request.data,partial =True)
+     if serializer.is_valid():
+          serializer.save()
+          return Response({"message":"Profile Update successfully!"},status=200)
+     return Response(serializer.errors,status=400)
+
+
+
+@api_view(['POST'])
+def change_password(request,user_id):
+     current_password = request.data.get('current_Password')
+     new_password = request.data.get('new_Password')
+     try:
+          user = User.objects.get(id = user_id)
+     except User.DoesNotExist:
+          return Response({"message": "User not found!"}, status=404)
+# neu 2 new pass khong giong nhau
+     if not check_password(current_password, user.password):
+          return Response({"message":"Current Password is incorrect!"},status=400)
+#ma khoa va luu mat khau
+     user.password = make_password(new_password)
+     user.save()
+     return Response({"message":"Password changed  successfully!"},status=201)
+     
+#Api admin Order
+from .serializers import OrderSumarySerializer
+@api_view(['GET'])
+def orders_not_confirmed(request):
+     orders = OrderAddress.objects.filter(order_final_status__isnull= True).order_by('-order_time')
+     serializer = OrderSumarySerializer(orders,many = True)
+     return Response(serializer.data)
+@api_view(['GET'])
+def orders_confirmed(request):
+     orders = OrderAddress.objects.filter(order_final_status="Order Confirmed").order_by('-order_time')
+     serializer = OrderSumarySerializer(orders,many = True)
+     return Response(serializer.data)
+@api_view(['GET'])
+def food_being_prepared(request):
+     orders = OrderAddress.objects.filter(order_final_status="Food being Prepared").order_by('-order_time')
+     serializer = OrderSumarySerializer(orders,many = True)
+     return Response(serializer.data)
+@api_view(['GET'])
+def food_pickup(request):
+     orders = OrderAddress.objects.filter(order_final_status="Food pickup").order_by('-order_time')
+     serializer = OrderSumarySerializer(orders,many = True)
+     return Response(serializer.data)
+@api_view(['GET'])
+def food_delivered(request):
+     orders = OrderAddress.objects.filter(order_final_status="Food Delivered").order_by('-order_time')
+     serializer = OrderSumarySerializer(orders,many = True)
+     return Response(serializer.data)
+@api_view(['GET'])
+def food_cancelled(request):
+     orders = OrderAddress.objects.filter(order_final_status="Order Cancelled").order_by('-order_time')
+     serializer = OrderSumarySerializer(orders,many = True)
+     return Response(serializer.data)
+@api_view(['GET'])
+def all_orders(request):
+     orders = OrderAddress.objects.all().order_by('-order_time')
+     serializer = OrderSumarySerializer(orders,many = True)
+     return Response(serializer.data)
+
+
+@api_view(['POST'])
+def order_between_dates(request):
+     from_date = request.data.get('from_date')
+     to_date = request.data.get('to_date')
+     status = request.data.get('status')
+
+
+     orders = OrderAddress.objects.filter(order_time__date__range =[from_date, to_date])
+     if status =='not_confirmed':
+        orders = orders.filter(order_final_status__isnull= True)
+     elif status !='all':
+         orders= orders.filter(order_final_status= status)
+     else:
+          orders= orders.filter(order_final_status= status)
+     serializer = OrderSumarySerializer(orders.order_by('-order_time'),many = True)
+     
+     return Response(serializer.data)
+
+from .serializers import OrderDetailSerializer,OrderedFoodSerializer,FoodTrackingSerializer
+@api_view(['GET'])
+def view_order_detail(request,order_number):
+
+     try:
+          order_address = OrderAddress.objects.select_related('user').get(order_number = order_number)
+          ordered_food = Order.objects.filter(order_number = order_number).select_related('food')
+          tracking = FoodTracking.objects.filter(order__order_number = order_number)
+
+     except:
+          return Response({'error': ' Something went wrong'}, status=404)
+
+     return Response({
+          'order': OrderDetailSerializer(order_address,context={'request': request}).data,
+          'foods': OrderedFoodSerializer(ordered_food,many= True,context={'request': request}).data,
+          'tracking': FoodTrackingSerializer(tracking, many= True).data,
+
+     })
+@api_view(['POST'])
+def update_order_status(request):
+     order_number = request.data.get('order_number')
+     new_status = request.data.get('status')
+     remark = request.data.get('remark')
+
+
+     try:
+          address = OrderAddress.objects.get(order_number = order_number)
+          order = Order.objects.filter(order_number = order_number).first()
+          if not order:
+               return Response({'error': 'Order not found'}, status=404)
+          FoodTracking.objects.create(order = order, remark = remark, status = new_status,order_cancelled_by_user = False)
+          address.order_final_status = new_status
+          address.save()
+          return Response({'message': 'Order status updated successfully'})
+     except OrderAddress.DoesNotExist:
+          return Response({'error': 'Invalid order number'}, status=400)     
+     serializer = OrderSumarySerializer(orders.order_by('-order_time'),many = True)
+     
+     return Response(serializer.data)
+
+from .serializers import OrderDetailSerializer,OrderedFoodSerializer,FoodTrackingSerializer
+@api_view(['GET'])
+def search_order(request):
+     query = request.GET.get('q','')
+     if query:
+          orders = OrderAddress.objects.filter(order_number__icontains=query).order_by('-order_time')
+     else:
+          orders = []
+     serializer = OrderSumarySerializer(orders,many = True)
+     return Response(serializer.data)
+@api_view(['GET', 'PUT', 'DELETE'])
+def category_detail(request,id):
+     try:
+          category = Category.objects.get(id=id)
+     except Category.DoesNotExist:
+          return Response({"message":"Category not found"},status=404)
+     if request.method == 'GET':
+          serializer = CategorySerializer(category)
+          return Response(serializer.data)
+     elif request.method == 'PUT':
+          serializer = CategorySerializer(category, data=request.data, partial=True)
+          if serializer.is_valid():
+               serializer.save()
+          return Response({"message":"Category updated successfully"}, status=200)
+     elif request.method == 'DELETE':
+          category.delete()
+          return Response({"message":"Category deleted successfully"}, status=200)
+
+@api_view(['DELETE'])
+def delete_food(request,id):
+     try:
+          food = Food.objects.get(id=id)
+          food.delete()
+          return Response({"message":"Food deleted successfully"}, status=200)
+     except Food.DoesNotExist:
+          return Response({"message":"Food not found"},status=404)
+
+@api_view(['GET', 'PUT'])
+@parser_classes([MultiPartParser,FormParser])
+def edit_food(request,id):
+     try:
+          food = Food.objects.get(id=id)
+     except Food.DoesNotExist:
+          return Response({"message":"Food Item not found"},status=404)
+     if request.method == 'GET':
+          serializer = FoodSerializer(food)
+          return Response(serializer.data)
+     elif request.method == 'PUT':
+          data = request.data.copy()
+          if 'image' not in request.FILES:
+               data['image'] = food.image
+          if 'is_available' not in data:
+               data['is_available'] = data['is_available'].lower() == 'true'
+          serializer = FoodSerializer(food, data=data, partial=True)
+          if serializer.is_valid():
+               serializer.save()
+          return Response({"message":"Food updated successfully"}, status=200)
+
+@api_view(['GET'])
+def list_users(request):
+     users = User.objects.all().order_by('-id')
+     serializer = UserSerializer(users, many=True)
+     return Response(serializer.data)
+
+@api_view(['DELETE'])
+def delete_user(request,id):
+     try:
+          user = User.objects.get(id=id)
+          user.delete()
+          return Response({"message":"User deleted successfully"}, status=200)
+     except User.DoesNotExist:
+          return Response({"message":"User not found"},status=404)
+from django.utils.timezone import now,timedelta
+from django.db.models import Sum,F,DecimalField
+@api_view(['GET'])
+def dashboard_metrics(request):
+     today = now().date()
+     start_week = today - timedelta(days=today.weekday())
+     start_month = today.replace(day=1)
+     start_year = today.replace(month=1, day=1)
+     def get_sales_total(start_date):
+          paid_orders = PaymentDetail.objects.filter(
+               payment_date__gte=start_date
+          ).values_list('order_number', flat=True)
+          total = Order.objects.filter(
+               order_number__in=paid_orders
+          ).annotate(
+               total_price=F('quantity') * F('food__item_price')
+          ).aggregate(
+               sale_amount=Sum('total_price')
+          )['sale_amount'] or 0.0
+          return round(total, 2)
+     data = {
+          "total_orders": OrderAddress.objects.count(),
+          "new_orders": OrderAddress.objects.filter(order_final_status__isnull=True).count(),
+          "confirmed_orders": OrderAddress.objects.filter(order_final_status="Order Confirmed").count(),
+          "food_prepering": OrderAddress.objects.filter(order_final_status="Food being Prepared").count(),
+          "food_pickup": OrderAddress.objects.filter(order_final_status="Food pickup").count(),
+          "food_delivered": OrderAddress.objects.filter(order_final_status="Food Delivered").count(),
+          "cancelled_orders": OrderAddress.objects.filter(order_final_status="Order Cancelled").count(),
+          "total_users": User.objects.count(),
+          "total_categories": Category.objects.count(),
+          "total_reviews": Review.objects.count(),
+          "total_wishlists": Wishlist.objects.count(),
+          "today_sales": get_sales_total(today),
+          "week_sales": get_sales_total(start_week),
+          "month_sales": get_sales_total(start_month),
+          "year_sales": get_sales_total(start_year),
+    }
+     return Response(data)
+
+from decimal import Decimal
+from collections import defaultdict
+from django.db.models import Sum,F,DecimalField
+from django.db.models.functions import TruncMonth,Coalesce
+
+@api_view(['GET'])
+def monthly_sales_summary(request):
+#Step 1
+     orders = (
+     Order.objects
+          .filter(is_order_placed=True)
+          .values('order_number')
+          .annotate(
+               total_price=Coalesce(Sum(F('quantity') * F('food__item_price'),
+               output_field=DecimalField(max_digits=12, decimal_places=2)),Decimal('0.00')
+          )
+     )
+     )
+#Step 2
+     order_price_map = {o['order_number']: o['total_price'] for o in orders}
+
+#Step 3: month resolve 
+     addresses = (
+          OrderAddress.objects
+          .filter(order_number__in=order_price_map.keys())
+          .annotate(month=TruncMonth('order_time'))
+          .values('month', 'order_number')
+          )
+     month_totals = defaultdict(lambda: Decimal('0.00'))
+
+     for addr in addresses:
+          label = addr['month'].strftime('%b')
+          month_totals[label] += order_price_map.get(addr['order_number'], Decimal('0.00'))
+
+
+     result = [{'month': m, 'sales': total} for m, total in month_totals.items()]
+     return Response(result)

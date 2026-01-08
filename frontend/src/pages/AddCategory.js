@@ -34,47 +34,47 @@ const AddCategory = () => {
     }
   };
   return (
-    <AdminLayout>
-      <ToastContainer position="top-center" autoClose={2000} />
-      <div className="row">
-        {/* CỘT TRÁI */}
-        <div className="col-md-8">
-          <div className="p-4 shadow-sm rounded bg-white">
-            <h4 className="mb-4">
-              <i className="fas fa-plus-circle text-primary me-2"></i>
-              Add Category
-            </h4>
-
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label className="form-label">Category Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter category name"
-                  value={categoryName}
-                  onChange={(e) => setCategoryName(e.target.value)}
-                  required
-                />
-              </div>
-
-              <button type="submit" className="btn btn-primary mt-3">
-                <i className="fas fa-plus me-2"></i>
+      <AdminLayout>
+        <ToastContainer position="top-center" autoClose={2000} />
+        <div className="row">
+          {/* CỘT TRÁI */}
+          <div className="col-md-8">
+            <div className="p-4 shadow-sm rounded bg-white">
+              <h4 className="mb-4">
+                <i className="fas fa-plus-circle text-primary me-2"></i>
                 Add Category
-              </button>
-            </form>
+              </h4>
+
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label className="form-label">Category Name</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter category name"
+                    value={categoryName}
+                    onChange={(e) => setCategoryName(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <button type="submit" className="btn btn-primary mt-3">
+                  <i className="fas fa-plus me-2"></i>
+                  Add Category
+                </button>
+              </form>
+            </div>
+          </div>
+
+          {/* CỘT PHẢI */}
+          <div className="col-md-4 d-flex justify-content-center align-items-center">
+            <i
+              className="fas fa-utensils"
+              style={{ fontSize: "180px", color: "#e5e5e5" }}
+            ></i>
           </div>
         </div>
-
-        {/* CỘT PHẢI */}
-        <div className="col-md-4 d-flex justify-content-center align-items-center">
-          <i
-            className="fas fa-utensils"
-            style={{ fontSize: "180px", color: "#e5e5e5" }}
-          ></i>
-        </div>
-      </div>
-    </AdminLayout>
+      </AdminLayout>
   );
 };
 

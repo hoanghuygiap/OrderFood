@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from "react";
 import AdminLayout from "../components/AdminLayout";
 import { Link } from "react-router-dom";
-import {CSVLink} from 'react-csv';
-
+import { CSVLink } from "react-csv";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ManageCategory = () => {
   const [categories, setCategories] = useState([]);
   const [allcategories, setAllCategories] = useState([]);
-  
+
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/categories/")
       .then((res) => res.json())
       .then((data) => {
+        toast.success(data.message);
         setCategories(data);
         setAllCategories(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+        toast.error("Error fetching categories");
       });
   }, []);
   const handleSearch = (s) => {
@@ -29,8 +35,23 @@ const ManageCategory = () => {
     }
   };
 
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      fetch(`http://127.0.0.1:8000/api/category/${id}/`, {
+        method: "DELETE",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          toast.success(data.message);
+          setCategories(categories.filter((cat) => cat.id !== id));
+        })
+        .catch((err) => console.error(err));
+    }
+  };
+
   return (
     <AdminLayout>
+      <ToastContainer position="top-center" autoClose={2000} />
       <div>
         <h3 className="text-center text-primary mb-4">
           <i className="fas fa-list-alt me-1"></i>Manage Food Category
@@ -49,8 +70,12 @@ const ManageCategory = () => {
             onChange={(e) => handleSearch(e.target.value)}
           ></input>
 
-          <CSVLink data= {categories} className = "btn btn-success" filename = {"category_list.csv"}>
-            <i className = "fas fa-file-csv me-2"></i>Export to CSV
+          <CSVLink
+            data={categories}
+            className="btn btn-success"
+            filename={"category_list.csv"}
+          >
+            <i className="fas fa-file-csv me-2"></i>Export to CSV
           </CSVLink>
         </div>
 
@@ -66,16 +91,22 @@ const ManageCategory = () => {
 
           <tbody>
             {categories.map((cat, index) => (
-              <tr key = {cat.id}>
+              <tr key={cat.id}>
                 <td>{index + 1}</td>
                 <td>{cat.category_name}</td>
                 <td>{new Date(cat.creation_date).toLocaleString()}</td>
                 <td>
-                  <Link to="" className="btn btn-sm btn-primary me-2">
+                  <Link
+                    to={`/edit_category/${cat.id}`}
+                    className="btn btn-sm btn-primary me-2"
+                  >
                     <i className="fas fa-edit  me-1"></i>Edit
                   </Link>
 
-                  <button className="btn btn-sm btn-danger">
+                  <button
+                    onClick={() => handleDelete(cat.id)}
+                    className="btn btn-sm btn-danger"
+                  >
                     <i className="fas fa-trash-alt me-1"></i>Delete
                   </button>
                 </td>
